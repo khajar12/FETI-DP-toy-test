@@ -50,16 +50,17 @@ To check if your implementation is working correctly, you can compare your solut
 
 You can visualize the obtained solution by importing the `*.pb` folders from a (relatively) modern version of [ParaView](https://www.paraview.org).
 
-
-## Disclaimer
-You don't need to use the provided functions. They are just a template for helping you, but feel free to do your own implementation if you wish.
+A few comments:
+* You don't need to use the provided functions. They are just a template for helping you, but feel free to do your own implementation if you wish.
+* I don't expect you to parallelize the code or optimize it to squeeze every single FLOP in your computer. However, good efficient code is always welcome.
+* You don't need to use PETSc library for matrices and vectors. You can stick to scipy sparse CSR matrices and numpy arrays for the vectors.
 
 
 ## Bonus
 If you liked the project and want to go further, possible improvements are:
 * Implement a preconditioner (see [[1]](#1)) and solve the preconditioned system $F \lambda = \bar{d}$ using a Conjugate Gradient solver.
 * Study the condition number of the matrix $F$ and number of iterations of the CG solver and analyze it in the light of the theory in [[1]](#1).
-* Extend the implementation for other boundary conditions and/or source terms.
+* Extend the implementation to other boundary conditions and/or source terms.
 ## References
 <a id="1">[1]</a> 
 Farhat, C., Lesoinne, M., LeTallec, P., Pierson, K., & Rixen, D. (2001).
