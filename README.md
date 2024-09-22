@@ -58,7 +58,7 @@ You don't need to use the provided functions. They are just a template for helpi
 ## Bonus
 If you liked the project and want to go further, possible improvements are:
 * Implement a preconditioner (see [[1]](#1)) and solve the preconditioned system $F \lambda = \bar{d}$ using a Conjugate Gradient solver.
-* Study the condition number of the matrix $F$ and analyze it in the light of the theory in [[1]](#1).
+* Study the condition number of the matrix $F$ and number of iterations of the CG solver and analyze it in the light of the theory in [[1]](#1).
 * Extend the implementation for other boundary conditions and/or source terms.
 ## References
 <a id="1">[1]</a> 
