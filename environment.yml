@@ -1,0 +1,7 @@
+name: fetidp-test
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - fenics-dolfinx=0.8.0
+  - scipy
