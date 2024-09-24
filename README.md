@@ -2,8 +2,9 @@
 ### A simple implementation of FETI-DP using FEniCSx for a Poisson problem with homogeneous Dirichlet conditions.
 
 This project solves the Poisson problem
-$$\Delta u + 1 = 0\quad\text{in }\Omega\\
-u = 0\quad\text{on }\partial\Omega$$
+```math
+\displaylines{\Delta u + 1 = 0\quad\text{in }\Omega \\u = 0\quad\text{on }\partial\Omega}
+```
 with $\Omega=[0,1]\times[0,1]$ using finite elements and a simple (non preconditioned) FETI-DP implemention in Python based on the [FEniCSx](https://fenicsproject.org/documentation/) library.
 
 The domain $\Omega$ is subdivided into $N_x\times N_y$ subdomains, each of them discretized with $n_x\times n_y$ elements and degree $p$.
