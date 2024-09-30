@@ -120,7 +120,13 @@ class SubDomain:
                 degrees-of-freedom.
         """
 
-        raise ValueError("To be implemented!!")
+        #raise ValueError("To be implemented!!")
+        # Retrieve corner DOFs
+        corner_dofs = self.get_corners_dofs()
+    
+        primal_dofs = np.sort(corner_dofs)
+
+        return primal_dofs
 
     def get_remainder_dofs(self) -> npt.NDArray[np.int32]:
         """Gets the local remainder degrees-of-freedom of the subdomain.
@@ -129,7 +135,18 @@ class SubDomain:
             npt.NDArray[np.int32]: Sorted remainder dofs.
         """
 
-        raise ValueError("To be implemented!!")
+        #raise ValueError("To be implemented!!")
+        # Get all the DOFs in the subdomain
+        all_dofs = self.get_all_dofs()
+
+        # Get the primal DOFs (e.g., corners, possibly faces)
+        primal_dofs = self.get_primal_dofs()
+
+        # The remainder DOFs are those that are in 'all_dofs' but not in 'primal_dofs'
+        remainder_dofs = np.setdiff1d(all_dofs, primal_dofs)
+
+        # Return sorted remainder DOFs
+        return np.sort(remainder_dofs)
 
     def get_dual_dofs(
         self,
@@ -151,8 +168,13 @@ class SubDomain:
         primal_dofs = self.get_primal_dofs()
 
         dual_dofs = []
-        for face_id in range(4):
-            raise ValueError("To be implemented!!")
+        #for face_id in range(4):
+        for face_dofs in faces_dofs:
+            #raise ValueError("To be implemented!!")
+            # Dual DOFs are the DOFs on this face that are not primal DOFs
+            dual_face_dofs = np.setdiff1d(face_dofs, primal_dofs, assume_unique=True)
+            # Append the sorted dual DOFs for this face
+            dual_dofs.append(np.sort(dual_face_dofs))
 
         return dual_dofs
 

@@ -170,10 +170,21 @@ class GlobalDofsManager:
         n_global_primals = self.get_num_primals()
         n_local_primals = 4
 
-        raise ValueError("To be implemented!")
+        #raise ValueError("To be implemented!")
+        Ap = scipy.sparse.lil_matrix((n_global_primals, n_local_primals), dtype=np.float64)
 
-        # Ap = ...
-        # return Ap
+        # Get the global primal DOF indices for the given subdomain
+        global_primal_dofs = self._primal_dofs[subdomain_id, :]
+
+        # Local primal DOFs are just [0, 1, 2, 3] for the 4 corners of a 2D subdomain
+        #local_primal_dofs = np.arange(n_local_primals)
+
+        # Fill the Ap matrix to map local DOFs to global ones
+        for local_idx, global_idx in enumerate(global_primal_dofs):
+            Ap[global_idx, local_idx] = 1.0  # Set the mapping value to 1
+
+        # Compressed Sparse Row format
+        return Ap.tocsr()
 
     def create_Bd(self, subdomain_id: int) -> SparseMatrix:
         """Creates the local (dual) Boolean operator Bd of a given subdomain.
