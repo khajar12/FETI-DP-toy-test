@@ -139,7 +139,7 @@ class SubDomain:
         # Get all the DOFs in the subdomain
         all_dofs = self.get_all_dofs()
 
-        # Get the primal DOFs (e.g., corners, possibly faces)
+        # Get the primal DOFs 
         primal_dofs = self.get_primal_dofs()
 
         # The remainder DOFs are those that are in 'all_dofs' but not in 'primal_dofs'

@@ -30,6 +30,7 @@ def create_primal_Schur(
     """
 
     # Global Schur.
+    # Equation 22
     P = gbl_dofs_mngr.get_num_primals()
     SPP = scipy.sparse.csr_matrix((P, P), dtype=Krr.dtype)
 
@@ -40,7 +41,7 @@ def create_primal_Schur(
     for s_id in range(N):
         
         Ap = gbl_dofs_mngr.create_Ap(s_id)
-        # Compute the local Schur complement
+        # Compute the local Schur complement solve Krr * Urp = Kpr
         Urp = scipy.sparse.linalg.spsolve(Krr, Krp)
         Spp_local = Kpp - Krp.T @ Urp
 
@@ -82,6 +83,7 @@ def create_F_and_d_bar(
     f_r = f[rem_dofs]
     f_p = f[primal_dofs]
 
+    # Restriction operator Dual DOFs from the remainning 
     T_dr_local = subdomain.create_Tdr()
 
     # Initialize the global stiffness matrix for primal DOFs
@@ -120,7 +122,7 @@ def create_F_and_d_bar(
     # Stack the K_rp blocks vertically to form the global KRP matrix
     K_RP = scipy.sparse.vstack(K_rp_list)
 
-    # KPR
+    # KPR = KRP.T
     K_PR = K_RP.T
 
     # Horizontally stack the B_r blocks to form the global BR matrix
@@ -253,23 +255,42 @@ def reconstruct_Us(
     K_rr = K[rem_dofs,:][:,rem_dofs]
     K_rp = K[rem_dofs,:][:,primal_dofs]
 
-    us = []
+    f_r = f[rem_dofs]
+
     N = gbl_dofs_mngr.get_num_subdomains()
+
+    # Initialize the block-diagonal remainder stiffness matrix and the force vector
+    K_rr_blocks = [K_rr.copy() for _ in range(N)]
+    K_RR = scipy.sparse.block_diag(K_rr_blocks)
+    f_R = np.concatenate([f_r.copy() for _ in range(N)])
+
+    T_dr_local = subdomain.create_Tdr()
+
+    K_rp_list = []
+    B_r_list = []
 
     # Loop over each subdomain
     for s_id in range(N):
-        Ap = gbl_dofs_mngr.create_Ap(s_id)
+        A_p = gbl_dofs_mngr.create_Ap(s_id)
 
-        u = np.zeros(K.shape[0], dtype=K.dtype)
-        u[primal_dofs] = Ap.T @ uP
+        # calculate the B_d and B_r
+        B_d = gbl_dofs_mngr.create_Bd(s_id)
+        B_r = B_d @ T_dr_local
+        B_r_list.append(B_r)
+        
+        # Construct the K_rp block for the current subdomain
+        K_rP = K_rp @ A_p.T
+        K_rp_list.append(K_rP)
 
-        # Ensure the correct size of uP is used for the current subdomain
-        uP_local = uP[:len(primal_dofs)] 
+    # Stack the K_rp blocks vertically to form the global KRP matrix
+    K_RP = scipy.sparse.vstack(K_rp_list)
 
-        # Solve for remainder DOFs
-        u[rem_dofs] = np.linalg.solve(K_rr.toarray(), K_rp @ uP_local)
+    # Horizontally stack the B_r blocks to form the global BR matrix
+    B_R = scipy.sparse.hstack(B_r_list)
 
-        us.append(u)
+    uR = np.linalg.inv(K_RR.toarray()) @ ( f_R - K_RP @ uP - B_R.T @ lambda_)
+
+    us = np.concatenate([uR, uP])
         
     return us
 
